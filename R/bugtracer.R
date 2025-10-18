@@ -41,31 +41,64 @@ traceCondition <- function() {
       # Store the environment object for the stack
       stack[[i]] <- frame
 
-      # Get the complete deparsed code for this call
-      src <- tryCatch({
-        paste(deparse(call), collapse = "\n")
-      }, error = function(e) {
-        "Source not available"
-      })
-
-      # Attempt to get line number from source reference
-      line_num <- tryCatch({
-        # Get source reference from the call itself
-        srcref <- attr(call, "srcref")
-        if (!is.null(srcref)) {
-          as.integer(srcref[1])
-        } else {
-          # Try to get srcref from the whole expression
-          srcfile <- attr(call, "srcfile")
-          if (!is.null(srcfile)) {
-            # If we have a srcfile but no srcref, we might be able to extract line info
-            NA
+      # Attempt to get line number and source code
+      line_num <- NA
+      src <- paste(deparse(call), collapse = "\n")  # Default to the call itself
+      
+      tryCatch({
+        # Get the function being called
+        func_name <- as.character(call[[1]])
+        
+        # Try to get the actual function object
+        func <- tryCatch({
+          # First try to get from the frame
+          if (exists(func_name, envir = frame, inherits = FALSE)) {
+            get(func_name, envir = frame)
+          } else if (exists(func_name, envir = parent.frame(i), inherits = TRUE)) {
+            get(func_name, envir = parent.frame(i), inherits = TRUE)
           } else {
-            NA
+            NULL
+          }
+        }, error = function(e) NULL)
+        
+        if (is.function(func)) {
+          # Get the source reference from the function
+          func_srcref <- attr(func, "srcref")
+          
+          if (!is.null(func_srcref)) {
+            # Get the complete function body from source
+            srcfile <- attr(func_srcref, "srcfile")
+            if (!is.null(srcfile) && !is.null(srcfile$lines)) {
+              # Extract all lines of the function
+              func_lines <- srcfile$lines[func_srcref[1]:func_srcref[3]]
+              src <- paste(func_lines, collapse = "\n")
+            } else {
+              # Try to get from the srcref itself
+              src <- paste(as.character(func_srcref), collapse = "\n")
+            }
+          } else {
+            # No srcref, deparse the function
+            src <- paste(deparse(func), collapse = "\n")
+          }
+          
+          # Get line number from the call's srcref
+          call_srcref <- attr(call, "srcref")
+          if (!is.null(call_srcref)) {
+            line_num <- as.integer(call_srcref[1])
+          }
+        } else {
+          # Not a function, just get the call line
+          srcref <- attr(call, "srcref")
+          if (!is.null(srcref)) {
+            line_num <- as.integer(srcref[1])
+            src_text <- as.character(srcref)
+            if (length(src_text) > 0) {
+              src <- paste(src_text, collapse = "\n")
+            }
           }
         }
       }, error = function(e) {
-        NA
+        # If extraction fails, keep defaults
       })
 
       # Store the information
