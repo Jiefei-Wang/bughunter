@@ -71,7 +71,10 @@ traceCondition <- function() {
             srcfile <- attr(func_srcref, "srcfile")
             if (!is.null(srcfile) && !is.null(srcfile$lines)) {
               # Extract all lines of the function definition
-              func_lines <- srcfile$lines[func_srcref[1]:func_srcref[3]]
+              # Ensure we don't access beyond the available lines
+              start_line <- func_srcref[1]
+              end_line <- min(func_srcref[3], length(srcfile$lines))
+              func_lines <- srcfile$lines[start_line:end_line]
               
               # Find where "function" keyword appears in the first line to get accurate start
               first_line <- func_lines[1]
