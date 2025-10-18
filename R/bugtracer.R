@@ -38,38 +38,37 @@ traceCondition <- function() {
       call <- calls[[i]]
       frame <- frames[[i]]
 
-      # Get the function name or call
-      func_name <- deparse(call[[1]])[1]
+      # Store the environment object for the stack
+      stack[[i]] <- frame
 
-      # Get the source code for this frame if available
+      # Get the complete deparsed code for this call
       src <- tryCatch({
-        deparse(call)
+        paste(deparse(call), collapse = "\n")
       }, error = function(e) {
         "Source not available"
       })
 
-      # Attempt to get line number (this is approximate)
+      # Attempt to get line number from source reference
       line_num <- tryCatch({
-        # Use sys.parent to find the calling frame
-        calling_frame <- sys.parent(i)
-        if (calling_frame > 0) {
-          # Get the source reference if available
-          srcref <- attr(sys.function(calling_frame), "srcref")
-          if (!is.null(srcref)) {
-            # Return the line number where the call was made
-            srcref[1]
+        # Get source reference from the call itself
+        srcref <- attr(call, "srcref")
+        if (!is.null(srcref)) {
+          as.integer(srcref[1])
+        } else {
+          # Try to get srcref from the whole expression
+          srcfile <- attr(call, "srcfile")
+          if (!is.null(srcfile)) {
+            # If we have a srcfile but no srcref, we might be able to extract line info
+            NA
           } else {
             NA
           }
-        } else {
-          NA
         }
       }, error = function(e) {
         NA
       })
 
       # Store the information
-      stack[[i]] <- func_name
       code[[i]] <- src
       line_numbers[[i]] <- line_num
     }
