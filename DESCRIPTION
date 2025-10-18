@@ -7,3 +7,4 @@ Author: Jiefei Wang
 Maintainer: Jiefei Wang <jiefei@example.com>
 Description: A package to capture and store call stacks, deparsed code for each frame, and line numbers when errors occur in R, allowing users to trace what happened.
 License: GPL-3
+RoxygenNote: 7.3.2
