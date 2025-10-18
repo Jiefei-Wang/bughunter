@@ -32,6 +32,7 @@ traceCondition <- function() {
     stack <- list()
     code <- list()
     line_numbers <- list()
+    call_list <- list()
 
     # Iterate through the call stack
     for (i in seq_along(calls)) {
@@ -158,6 +159,7 @@ traceCondition <- function() {
       # Store the information
       code[[i]] <- src
       line_numbers[[i]] <- line_num
+      call_list[[i]] <- call
     }
 
     # Store in package environment
@@ -166,6 +168,7 @@ traceCondition <- function() {
       stack = stack,
       code = code,
       line_numbers = line_numbers,
+      call = call_list,
       timestamp = Sys.time()
     )
   }, error = function(e) {
@@ -181,7 +184,7 @@ traceCondition <- function() {
 #'
 #' Retrieves the most recent trace data captured by traceCondition.
 #'
-#' @return A list containing error_message, stack, code, line_numbers, and timestamp,
+#' @return A list containing error_message, stack, code, line_numbers, call, and timestamp,
 #'         or NULL if no trace data is available.
 #' @export
 getLastTrace <- function() {
