@@ -69,8 +69,18 @@ traceCondition <- function() {
             # Get the complete function body from source
             srcfile <- attr(func_srcref, "srcfile")
             if (!is.null(srcfile) && !is.null(srcfile$lines)) {
-              # Extract all lines of the function
+              # Extract all lines of the function definition
               func_lines <- srcfile$lines[func_srcref[1]:func_srcref[3]]
+              
+              # Find where "function" keyword appears in the first line to get accurate start
+              first_line <- func_lines[1]
+              func_keyword_pos <- regexpr("\\bfunction\\b", first_line)
+              
+              if (func_keyword_pos > 0) {
+                # Extract from "function" onward
+                func_lines[1] <- substring(first_line, func_keyword_pos)
+              }
+              
               src <- paste(func_lines, collapse = "\n")
             } else {
               # Try to get from the srcref itself
@@ -81,19 +91,63 @@ traceCondition <- function() {
             src <- paste(deparse(func), collapse = "\n")
           }
           
-          # Get line number from the call's srcref
+          # For line number: we need to find where this call was made WITHIN THE CALLING FUNCTION
+          # The call srcref tells us the absolute line, we need to find the calling function
           call_srcref <- attr(call, "srcref")
-          if (!is.null(call_srcref)) {
-            line_num <- as.integer(call_srcref[1])
+          if (!is.null(call_srcref) && i > 1) {
+            # Get the calling function (the previous frame)
+            calling_func_name <- as.character(calls[[i-1]][[1]])
+            calling_func <- tryCatch({
+              prev_frame <- frames[[i-1]]
+              if (exists(calling_func_name, envir = prev_frame, inherits = FALSE)) {
+                get(calling_func_name, envir = prev_frame)
+              } else {
+                get(calling_func_name, envir = .GlobalEnv, inherits = TRUE)
+              }
+            }, error = function(e) NULL)
+            
+            if (is.function(calling_func)) {
+              calling_func_srcref <- attr(calling_func, "srcref")
+              if (!is.null(calling_func_srcref)) {
+                call_line <- as.integer(call_srcref[1])
+                calling_func_start <- as.integer(calling_func_srcref[1])
+                line_num <- call_line - calling_func_start + 1
+              }
+            }
+          } else if (!is.null(call_srcref)) {
+            # First call in stack - no relative position available
+            line_num <- NA
           }
+          
         } else {
           # Not a function, just get the call line
           srcref <- attr(call, "srcref")
           if (!is.null(srcref)) {
-            line_num <- as.integer(srcref[1])
             src_text <- as.character(srcref)
             if (length(src_text) > 0) {
               src <- paste(src_text, collapse = "\n")
+            }
+            
+            # Try to calculate relative line
+            if (i > 1) {
+              calling_func_name <- as.character(calls[[i-1]][[1]])
+              calling_func <- tryCatch({
+                prev_frame <- frames[[i-1]]
+                if (exists(calling_func_name, envir = prev_frame, inherits = FALSE)) {
+                  get(calling_func_name, envir = prev_frame)
+                } else {
+                  get(calling_func_name, envir = .GlobalEnv, inherits = TRUE)
+                }
+              }, error = function(e) NULL)
+              
+              if (is.function(calling_func)) {
+                calling_func_srcref <- attr(calling_func, "srcref")
+                if (!is.null(calling_func_srcref)) {
+                  call_line <- as.integer(srcref[1])
+                  calling_func_start <- as.integer(calling_func_srcref[1])
+                  line_num <- call_line - calling_func_start + 1
+                }
+              }
             }
           }
         }
