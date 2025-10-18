@@ -1,0 +1,9 @@
+Package: bugtracer
+Type: Package
+Title: Bug Tracer for R Error Handling
+Version: 1.0
+Date: 2023-11-18
+Author: Jiefei Wang
+Maintainer: Jiefei Wang <jiefei@example.com>
+Description: A package to capture and store call stacks, deparsed code for each frame, and line numbers when errors occur in R, allowing users to trace what happened.
+License: GPL-3
