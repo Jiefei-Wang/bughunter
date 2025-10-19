@@ -82,6 +82,11 @@ setAs("Hunt", "list", function(from) {
     )
 })
 
+setMethod("as.list", signature = "Hunt",
+  definition = function(x) {
+    as(x, "list")
+  }
+)
 
 
 
@@ -89,6 +94,7 @@ setAs("Hunt", "list", function(from) {
 #' Show method for Hunt
 #'
 #' @param object Hunt object
+#' @export 
 setMethod("show", "Hunt", function(object) {
     cat("Hunt object\n")
     cat("==================\n")
@@ -114,6 +120,7 @@ setMethod("show", "Hunt", function(object) {
 #' Returns the number of frames/calls in the hunt
 #'
 #' @param x Hunt object
+#' @export 
 setMethod("length", "Hunt", function(x) {
     length(x@calls)
 })
@@ -121,6 +128,7 @@ setMethod("length", "Hunt", function(x) {
 #' Summary method for Hunt
 #'
 #' @param object Hunt object
+#' @export 
 setMethod("summary", "Hunt", function(object) {
     cat("Hunt Summary\n")
     cat("===================\n")

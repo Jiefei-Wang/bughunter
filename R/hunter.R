@@ -7,7 +7,8 @@
 #' Use with options(error = hunter) to automatically capture errors.
 #'
 #' @param condition The condition object (typically an error)
-#' @return Invisible NULL
+#' @return `hunter`: Invisible NULL
+#' @rdname hunt
 #' @export
 hunter <- function() {
     # Temporarily unset the error handler to prevent recursion
