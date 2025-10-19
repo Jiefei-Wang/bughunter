@@ -1,25 +1,25 @@
-\name{bugtracer-package}
-\alias{bugtracer-package}
-\alias{bugtracer}
+\name{bughunter-package}
+\alias{bughunter-package}
+\alias{bughunter}
 \docType{package}
 \title{
-\packageTitle{bugtracer}
+\packageTitle{bughunter}
 }
 \description{
-\packageDescription{bugtracer}
+\packageDescription{bughunter}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{bugtracer}
-\packageIndices{bugtracer}
+\packageDESCRIPTION{bughunter}
+\packageIndices{bughunter}
 ~~ An overview of how to use the package, including the most ~~
 ~~ important functions ~~
 }
 \author{
-\packageAuthor{bugtracer}
+\packageAuthor{bughunter}
 
-Maintainer: \packageMaintainer{bugtracer}
+Maintainer: \packageMaintainer{bughunter}
 }
 \references{
 ~~ Literature or other references for background information ~~
