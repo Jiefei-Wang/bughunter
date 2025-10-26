@@ -1,8 +1,3 @@
-// Handler for terminal output from server
-Shiny.addCustomMessageHandler("term_out", function (msg) {
-  window.RShinyTerminal && window.RShinyTerminal.appendOutput(msg);
-});
-
 // Minimal terminal emulator for Shiny (no deps).
 // www/terminal.js
 (function () {
@@ -43,6 +38,13 @@ Shiny.addCustomMessageHandler("term_out", function (msg) {
     const input = el("span", "term-input");
     input.contentEditable = "true";
     input.spellcheck = false;
+    
+    // Add click handler directly to the input
+    input.addEventListener("click", function(e) {
+      e.stopPropagation();
+      this.focus();
+    });
+    
     line.appendChild(prompt);
     line.appendChild(input);
     return { line, input };
@@ -126,24 +128,29 @@ Shiny.addCustomMessageHandler("term_out", function (msg) {
         term.innerHTML = "";
         const fresh = makePromptLine();
         term.appendChild(fresh.line);
-        focusInput();
+        scrollToBottom(term);
+        setTimeout(focusInput, 0);
       } else if (msg.type === "output") {
         appendOutputBlock(msg.text || "", "output");
         // Create new prompt AFTER output
         const next = makePromptLine();
         term.appendChild(next.line);
+        scrollToBottom(term);
+        setTimeout(focusInput, 0);
       } else if (msg.type === "error") {
         appendOutputBlock(msg.text || "", "error");
         // Create new prompt AFTER error
         const next = makePromptLine();
         term.appendChild(next.line);
+        scrollToBottom(term);
+        setTimeout(focusInput, 0);
       } else if (msg.type === "echo") {
         appendOutputBlock(msg.text || "", "echo");
         const next = makePromptLine();
         term.appendChild(next.line);
+        scrollToBottom(term);
+        setTimeout(focusInput, 0);
       }
-      scrollToBottom(term);
-      focusInput();
     });
     return true;
   }
