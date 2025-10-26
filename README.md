@@ -27,7 +27,7 @@
 ## How to install
 You can install it using the following command:
 ```{r}
-devtools::install("Jiefei-Wang/bughunter")
+devtools::install_github("Jiefei-Wang/bughunter")
 ```
 
 ## Quick Start
