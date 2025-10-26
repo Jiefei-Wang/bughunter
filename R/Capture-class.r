@@ -21,7 +21,7 @@
         error_message = "character",
         frames = "list",
         func_names = "character",
-        func_src_codes = "list",
+        func_src_codes = "character",
         func_src_available = "logical",
         func_src_start = "numeric",
         func_src_end = "numeric",

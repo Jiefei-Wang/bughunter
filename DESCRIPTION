@@ -16,3 +16,4 @@ Imports:
     bslib,
     shinyAce,
     reactable
+LazyData: true
