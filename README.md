@@ -1,13 +1,11 @@
 # bughunter <img src="man/figures/logo.png" align="right" height="139" />
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/Jiefei-Wang/bughunter/workflows/R-CMD-check/badge.svg)](https://github.com/Jiefei-Wang/bughunter/actions)
-[![CRAN status](https://www.r-pkg.org/badges/version/bughunter)](https://CRAN.R-project.org/package=bughunter)
+<!-- [![R-CMD-check](https://github.com/Jiefei-Wang/bughunter/workflows/R-CMD-check/badge.svg)](https://github.com/Jiefei-Wang/bughunter/actions)
+[![CRAN status](https://www.r-pkg.org/badges/version/bughunter)](https://CRAN.R-project.org/package=bughunter) -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![License: GPL-3](https://img.shields.io/badge/License-GPL%203-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <!-- badges: end -->
-
-## Overview
 
 **Tired of cryptic error messages?** 😫  
 **Struggling to explain bugs to others?** 🐛  
