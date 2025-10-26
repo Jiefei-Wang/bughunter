@@ -1,17 +1,10 @@
 
-setGeneric("evalCode", function(capture, frameIdx, code) standardGeneric("evalCode"))
-
-setMethod("evalCode", "Capture", function(capture, frameIdx, code) {
-    frame <- capture@frames[[frameIdx]]
-    eval(parse(text = code), envir = frame)
-})
-
 
 
 registerConsoleEvents <- function(input, output, session, capture, selected_frame) {
   # Receive command strings from JS: input$term_cmd
   observeEvent(input$term_cmd, {
-    print(glue("Received console command: {input$term_cmd}"))
+    # print(glue("Received console command: {input$term_cmd}"))
     cmd <- input$term_cmd
     # Safety: ignore empty
     if (!nzchar(trimws(cmd))) {

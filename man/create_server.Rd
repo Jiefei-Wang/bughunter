@@ -4,7 +4,7 @@
 \alias{create_server}
 \title{Create Server Logic for Bug Viewer Application}
 \usage{
-create_server(input, output, session, trace = NULL)
+create_server(input, output, session, capture = NULL)
 }
 \arguments{
 \item{input}{Shiny input object}
@@ -12,8 +12,6 @@ create_server(input, output, session, trace = NULL)
 \item{output}{Shiny output object}
 
 \item{session}{Shiny session object}
-
-\item{initial_trace}{Optional initial trace object}
 }
 \value{
 Server function

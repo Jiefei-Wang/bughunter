@@ -1,27 +1,42 @@
-setGeneric("getEditorCode", function(capture, frameIdx) standardGeneric("getEditorCode"))
 
+
+#####################################
+# Call stack methods
+#####################################
+
+#' @export
+setGeneric("getEditorCode", function(capture, frameIdx) standardGeneric("getEditorCode"))
+#' @export
 setMethod("getEditorCode", "Capture", function(capture, frameIdx) {
     paste0(capture@func_src_codes[[frameIdx]], collapse = "\n")
 })
 
-# getCallLine
+#' @export
 setGeneric("getStopAtLine", function(capture, frameIdx) standardGeneric("getStopAtLine"))
 
+#' @export
 setMethod("getStopAtLine", "Capture", function(capture, frameIdx) {
     capture@stop_at_lines[[frameIdx]]
 })
 
+#' @export
 setGeneric("getCallName", function(capture, frameIdx) standardGeneric("getCallName"))
 
+#' @export
 setMethod("getCallName", "Capture", function(capture, frameIdx) {
     capture@calls[[frameIdx]]
 })
 
 
 
+#####################################
+# Environment methods
+#####################################
 
+#' @export
 setGeneric("getEnvDescriptor", function(capture, frameIdx) standardGeneric("getEnvDescriptor"))
 
+#' @export
 setMethod("getEnvDescriptor", "Capture", function(capture, frameIdx) {
     nchar <- 40
     frame <- capture@frames[[frameIdx]]
@@ -55,10 +70,33 @@ setMethod("getEnvDescriptor", "Capture", function(capture, frameIdx) {
 })
 
 
+#####################################
+# Code editor methods
+#####################################
 
-
+#' @export
 setGeneric("isCodeEditable", function(capture, frameIdx) standardGeneric("isCodeEditable"))
-
+#' @export
 setMethod("isCodeEditable", "Capture", function(capture, frameIdx) {
     FALSE
+})
+
+
+
+#####################################
+# console code evaluation methods
+#####################################
+#' @export
+setGeneric("isEvalable", function(capture, frameIdx) standardGeneric("isEvalable"))
+#' @export
+setMethod("isEvalable", "Capture", function(capture, frameIdx) {
+    FALSE
+})
+
+#' @export
+setGeneric("evalCode", function(capture, frameIdx, code) standardGeneric("evalCode"))
+#' @export
+setMethod("evalCode", "Capture", function(capture, frameIdx, code) {
+    frame <- capture@frames[[frameIdx]]
+    eval(parse(text = code), envir = frame)
 })

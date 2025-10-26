@@ -67,7 +67,7 @@
 
     function handleKey(e) {
         const textContent = input.textContent;
-        console.log("Key pressed:", e.key, "Content:", textContent);
+        // console.log("Key pressed:", e.key, "Content:", textContent);
 
         if (e.key === "Enter") {
             if (textContent === "") {
@@ -81,8 +81,8 @@
         }
         if (e.key === "ArrowUp") {
             e.preventDefault();
-            console.log("History index before:", history_index);
-            console.log("command_history before:", command_history);
+            // console.log("History index before:", history_index);
+            // console.log("command_history before:", command_history);
             if (
                 textContent != "" &&
                 history_index === command_history.length
