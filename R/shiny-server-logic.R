@@ -7,12 +7,11 @@
 #' @param input Shiny input object
 #' @param output Shiny output object
 #' @param session Shiny session object
-#' @param initial_trace Optional initial trace object
 #' @return Server function
 #' @keywords internal
-create_server <- function(input, output, session, trace = NULL) {
+create_server <- function(input, output, session, capture = NULL) {
     
-    nCalls <- length(trace)
+    nCalls <- length(capture)
     # Reactive value to track selected frame
     selected_frame <- reactiveVal(nCalls)
 
@@ -22,11 +21,14 @@ create_server <- function(input, output, session, trace = NULL) {
     current_code <- reactiveVal("")
     highlighted_line <- reactiveVal(1)  # 1-based line number
 
-    registerEditorEvents(input, output, session, trace, current_code, highlighted_line, selected_frame)
+    registerEditorEvents(input, output, session, capture, current_code, highlighted_line, selected_frame)
 
-    registerCallStackEvents(input, output, session, trace, selected_frame)
+    registerEnvironmentEvents(input, output, session, capture, selected_frame, environment_dt)
 
-    registerEnvironmentEvents(input, output, session, trace, selected_frame, environment_dt)
+    registerCallStackEvents(input, output, session, capture, selected_frame)
+
+    registerConsoleEvents(input, output, session, capture, selected_frame)
+
 }
 
 

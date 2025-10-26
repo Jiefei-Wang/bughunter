@@ -1,7 +1,20 @@
+// Handler for terminal output from server
+Shiny.addCustomMessageHandler("term_out", function (msg) {
+  window.RShinyTerminal && window.RShinyTerminal.appendOutput(msg);
+});
+
 // Minimal terminal emulator for Shiny (no deps).
+// www/terminal.js
 (function () {
   const TERM_ID = "terminal";
   const PROMPT = "R> ";
+
+  let initialized = false;
+  let term = null;
+  let history = [];
+  let histPos = -1;
+  let currentInput = "";
+  const earlyMsgQueue = [];
 
   function el(tag, cls, text) {
     const e = document.createElement(tag);
@@ -9,11 +22,21 @@
     if (text != null) e.textContent = text;
     return e;
   }
-
-  function scrollToBottom(container) {
-    container.scrollTop = container.scrollHeight;
+  function scrollToBottom(c) {
+    c.scrollTop = c.scrollHeight;
   }
-
+  function focusInput() {
+    const input = term && term.querySelector(".term-input:last-of-type");
+    if (input) {
+      input.focus();
+      const sel = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(input);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
+    }
+  }
   function makePromptLine() {
     const line = el("div", "term-line");
     const prompt = el("span", "term-prompt", PROMPT);
@@ -24,74 +47,42 @@
     line.appendChild(input);
     return { line, input };
   }
-
-  const term = document.getElementById(TERM_ID);
-  const history = [];
-  let histPos = -1;
-  let currentInput = "";
-
-  function focusInput() {
-    const input = term.querySelector(".term-input:last-of-type");
-    if (input) {
-      input.focus();
-      // place caret at end
-      const sel = window.getSelection();
-      const range = document.createRange();
-      range.selectNodeContents(input);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
-    }
-  }
-
   function appendOutputBlock(text, type) {
-    if (text && text.length) {
-      const cls = type === "error" ? "term-error" :
-                  type === "echo"  ? "term-muted" : "term-output";
-      const out = el("div", `term-line ${cls}`, text);
-      term.appendChild(out);
-    }
+    if (!text) return;
+    const cls =
+      type === "error"
+        ? "term-error"
+        : type === "echo"
+        ? "term-muted"
+        : "term-output";
+    const out = el("div", `term-line ${cls}`, text);
+    term.appendChild(out);
   }
-
   function submitCommand(cmd) {
-    // Echo the command frozen
     const lastLine = term.querySelector(".term-line:last-child");
     const input = lastLine && lastLine.querySelector(".term-input");
     if (input) {
       input.contentEditable = "false";
       input.classList.add("term-muted");
     }
-
-    // Send to Shiny
     if (window.Shiny && Shiny.setInputValue) {
       Shiny.setInputValue("term_cmd", cmd, { priority: "event" });
     }
-
-    // Keep history
     if (cmd.trim().length) {
       history.push(cmd);
       histPos = history.length;
     }
-
-    // New prompt
-    const next = makePromptLine();
-    term.appendChild(next.line);
     scrollToBottom(term);
-    focusInput();
   }
-
   function handleKey(e) {
     const input = term.querySelector(".term-input:last-of-type");
     if (!input) return;
 
     if (e.key === "Enter") {
       e.preventDefault();
-      const cmd = input.textContent || "";
-      submitCommand(cmd);
+      submitCommand(input.textContent || "");
       return;
     }
-
-    // History: Up / Down
     if (e.key === "ArrowUp") {
       e.preventDefault();
       if (histPos > 0) {
@@ -114,36 +105,84 @@
       focusInput();
       return;
     }
-
-    // Ctrl+L -> clear
     if ((e.ctrlKey || e.metaKey) && (e.key === "l" || e.key === "L")) {
       e.preventDefault();
       if (window.Shiny && Shiny.setInputValue) {
-        Shiny.setInputValue("term_clear", new Date().getTime(), { priority: "event" });
+        Shiny.setInputValue("term_clear", Date.now(), { priority: "event" });
       }
       return;
     }
   }
 
-  // Initialize
-  const first = makePromptLine();
-  term.appendChild(first.line);
-  term.addEventListener("click", focusInput);
-  document.addEventListener("keydown", handleKey);
-  focusInput();
-
-  // Expose minimal API for server messages
-  window.RShinyTerminal = {
-    appendOutput: function (msg) {
+  function registerMessageHandler() {
+    if (!window.Shiny || !Shiny.addCustomMessageHandler) return false;
+    Shiny.addCustomMessageHandler("term_out", function (msg) {
+      if (!initialized) {
+        earlyMsgQueue.push(msg);
+        return;
+      }
       if (!msg || !msg.type) return;
       if (msg.type === "clear") {
         term.innerHTML = "";
         const fresh = makePromptLine();
         term.appendChild(fresh.line);
         focusInput();
-        return;
+      } else if (msg.type === "output") {
+        appendOutputBlock(msg.text || "", "output");
+        // Create new prompt AFTER output
+        const next = makePromptLine();
+        term.appendChild(next.line);
+      } else if (msg.type === "error") {
+        appendOutputBlock(msg.text || "", "error");
+        // Create new prompt AFTER error
+        const next = makePromptLine();
+        term.appendChild(next.line);
+      } else if (msg.type === "echo") {
+        appendOutputBlock(msg.text || "", "echo");
+        const next = makePromptLine();
+        term.appendChild(next.line);
       }
-      if (msg.type === "output") {
+      scrollToBottom(term);
+      focusInput();
+    });
+    return true;
+  }
+
+  function init() {
+    if (initialized) return true;
+    term = document.getElementById(TERM_ID);
+    if (!term) return false;
+
+    // Build first prompt and listeners
+    const first = makePromptLine();
+    term.appendChild(first.line);
+    term.addEventListener("click", focusInput);
+
+    // Avoid duplicate global key listener
+    if (!window.__RShinyTerminalKeybound) {
+      document.addEventListener("keydown", handleKey);
+      window.__RShinyTerminalKeybound = true;
+    }
+
+    // Expose minimal API (optional)
+    window.RShinyTerminal = {
+      focus: focusInput,
+    };
+
+    // Register handler (may already be available)
+    registerMessageHandler();
+
+    // Flush any early messages
+    initialized = true;
+    while (earlyMsgQueue.length) {
+      const msg = earlyMsgQueue.shift();
+      Shiny && Shiny.addCustomMessageHandler && Shiny.onInputChange; // just to reference if needed
+      // Manually dispatch through the same logic:
+      if (msg.type === "clear") {
+        term.innerHTML = "";
+        const fresh = makePromptLine();
+        term.appendChild(fresh.line);
+      } else if (msg.type === "output") {
         appendOutputBlock(msg.text || "", "output");
       } else if (msg.type === "error") {
         appendOutputBlock(msg.text || "", "error");
@@ -151,7 +190,39 @@
         appendOutputBlock(msg.text || "", "echo");
       }
       scrollToBottom(term);
-      focusInput();
     }
-  };
+    focusInput();
+    return true;
+  }
+
+  // Try to init on DOM ready
+  function onReady(fn) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", fn, { once: true });
+    } else {
+      fn();
+    }
+  }
+
+  onReady(function () {
+    if (init()) return;
+
+    // If #terminal not yet in DOM (e.g., dynamic UI), observe until it appears
+    const obs = new MutationObserver(() => {
+      if (init()) {
+        obs.disconnect();
+      }
+    });
+    obs.observe(document.documentElement, { childList: true, subtree: true });
+  });
+
+  // Also try again when Shiny connects (covers reconnects/hydration timing)
+  document.addEventListener(
+    "shiny:connected",
+    function () {
+      registerMessageHandler();
+      init();
+    },
+    { once: false }
+  );
 })();

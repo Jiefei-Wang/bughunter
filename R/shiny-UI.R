@@ -128,21 +128,7 @@ create_environment_panel <- function() {
 #' @return Shiny UI element for the console panel
 #' @keywords internal
 create_console_panel <- function() {
-  div(class = "panel",
-    div(class = "panel-header", "Console"),
-    div(class = "panel-body",
-      div(class = "console-container",
-        div(id = "console_output", class = "console-output",
-          shiny::uiOutput("console_output_ui")
-        ),
-        div(class = "console-inputline",
-          shiny::span(class = "console-prompt", "> "),
-          tags$textarea(id = "console_input", class = "console-input", rows = 1,
-                              placeholder = "Type R code. Enter to run, Ctrl+Enter for newline...")
-        )
-      )
-    )
-  )
+    tags$div(id = "terminal", class = "terminal")
 }
 
 #' Create Call Stack Panel UI
