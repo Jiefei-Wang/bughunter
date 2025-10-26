@@ -2,7 +2,8 @@
 setGeneric("evalCode", function(capture, frameIdx, code) standardGeneric("evalCode"))
 
 setMethod("evalCode", "Capture", function(capture, frameIdx, code) {
-    "this is a test"
+    frame <- capture@frames[[frameIdx]]
+    eval(parse(text = code), envir = frame)
 })
 
 
@@ -10,17 +11,15 @@ setMethod("evalCode", "Capture", function(capture, frameIdx, code) {
 registerConsoleEvents <- function(input, output, session, capture, selected_frame) {
   # Receive command strings from JS: input$term_cmd
   observeEvent(input$term_cmd, {
-        print("Console command received")
-        cmd <- input$term_cmd
-        # Safety: ignore empty
-        if (!nzchar(trimws(cmd))) {
-            session$sendCustomMessage("term_out", list(
-                type = "echo", text = ""
-            ))
-            return()
-        }
-
-        # Evaluate in globalenv so objects persist like a real console
+    print(glue("Received console command: {input$term_cmd}"))
+    cmd <- input$term_cmd
+    # Safety: ignore empty
+    if (!nzchar(trimws(cmd))) {
+        print("Ignoring empty command")
+        session$sendCustomMessage("term_out", list(
+            type = "echo", text = ""
+        ))
+    }else{
         txt <- NULL
         err <- NULL
         warn <- NULL
@@ -56,6 +55,7 @@ registerConsoleEvents <- function(input, output, session, capture, selected_fram
                 type = "output", text = txt
             ))
         }
+    }
   })
 
   # Clear request from JS (Ctrl+L)

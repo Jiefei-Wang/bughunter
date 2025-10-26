@@ -1,12 +1,12 @@
 .terminal {
-background: #e6e6e6;
-color: #000000;
+background: #ffffff;
+color: #ffffff;
 font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
-border-radius: 8px;
-padding: 12px;
+border-radius: 2px;
+padding: 2px;
 height: 100%;
 overflow-y: auto;
-box-shadow: 0 0 0 1px #333 inset;
+box-shadow: 0 0 0 1px #ffffff inset;
 }
 .term-line { white-space: pre-wrap; word-break: break-word; }
 .term-prompt { color: rgb(0, 0, 0); }
@@ -20,6 +20,6 @@ caret-color: #000000;
 min-width: 2ch;
 }
 .term-output { color: rgb(0, 0, 0); }
-.term-error { color: #f88; }
-.term-warning { color: rgb(255, 242, 0); }
+.term-error { color: rgb(255, 0, 0); }
+.term-warning { color: #ffc400; }
 .term-muted { color: #7a7a7a; }
