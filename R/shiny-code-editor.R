@@ -14,28 +14,15 @@ get_current_line_content <- function(input) {
 
 # Function to highlight a specific line
 highlight_line <- function(session, line_number) {
+    # print(paste("Highlighting line:", line_number))
     # Remove existing annotations
     session$sendCustomMessage("aceEditor_clearAnnotations", "code_editor")
     
-    # Add highlight annotation (0-based for Ace Editor)
-    annotation <- list(
-        row = line_number - 1,  # Convert to 0-based
-        column = 0,
-        text = "",
-        type = "info"
+    start_line <- line_number - 1
+    end_line <- line_number - 1
+    session$sendCustomMessage("aceEditor_highlightLines", 
+        list(editorId = "code_editor", start = start_line, end = end_line)
     )
-    
-    session$sendCustomMessage("aceEditor_setAnnotations", list(
-        editorId = "code_editor",
-        annotations = list(annotation)
-    ))
-    
-    # Also set the cursor to that line
-    session$sendCustomMessage("aceEditor_gotoLine", list(
-        editorId = "code_editor",
-        line = line_number,
-        column = 0
-    ))
 }
 
 
@@ -56,23 +43,25 @@ registerEditorEvents <- function(input, output, session, capture, current_code, 
             shinyAce::updateAceEditor(
                 session = session,
                 editorId = "code_editor",
-                value = code
+                value = code,
+                readOnly = !isCodeEditable(capture)
             )
             
             # Set initial highlighted line if available
             call_line <- getStopAtLine(capture, selected_frame_idx)
-            if (!is.null(call_line)) {
+            # print(paste("Initial highlight line:", call_line))
+            if (!is.null(call_line)&& !is.na(call_line)) {
                 highlight_line(session, call_line)
             }
         }
     })
     
     # Update highlighted line when user clicks on call stack or other triggers
-    observeEvent(input$highlight_line_trigger, {
-        new_line <- input$highlight_line_trigger
-        highlighted_line(new_line)
-        highlight_line(session, new_line)
-    })
+    # observeEvent(input$highlight_line_trigger, {
+    #     new_line <- input$highlight_line_trigger
+    #     highlighted_line(new_line)
+    #     highlight_line(session, new_line)
+    # })
     
     # Handle Ctrl+Enter for executing selected code
     observeEvent(input$code_editor_key, {

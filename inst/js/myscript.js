@@ -37,49 +37,32 @@ $(document).on("shiny:connected", function() {
 });
 
 // Handle custom messages for Ace Editor
-Shiny.addCustomMessageHandler("aceEditor_clearAnnotations", function(editorId) {
+Shiny.addCustomMessageHandler("aceEditor_clearHighlights", function(editorId) {
   var editor = window.ace.edit(editorId);
   if (editor) {
     editor.getSession().clearAnnotations();
     editor.getSession().clearBreakpoints();
     
     // Remove marker if exists
-    if (editor._currentMarker) {
-      editor.getSession().removeMarker(editor._currentMarker);
-      editor._currentMarker = null;
+    if (editor._lineHighlight) {
+        editor.getSession().removeMarker(editor._lineHighlight.id);
+        editor._lineHighlight = null;
     }
   }
 });
 
-Shiny.addCustomMessageHandler("aceEditor_setAnnotations", function(data) {
-  var editor = window.ace.edit(data.editorId);
-  if (editor) {
-    // Remove previous marker
-    if (editor._currentMarker) {
-      editor.getSession().removeMarker(editor._currentMarker);
-    }
-    
-    editor.getSession().setAnnotations(data.annotations);
-    
-    // Add background highlight for the line
-    var Range = ace.require("ace/range").Range;
-    var range = new Range(data.annotations[0].row, 0, data.annotations[0].row, 1);
-    var markerId = editor.getSession().addMarker(range, "hl-line", "fullLine");
-    
-    // Store marker ID to remove later
-    editor._currentMarker = markerId;
-  }
-});
+Shiny.addCustomMessageHandler("aceEditor_highlightLines", function(data) {
+    console.log("highlighting lines");
+    var editor = window.ace.edit(data.editorId);
+    if (editor) {
+        // Remove previous marker
+        if (editor._lineHighlight) {
+          editor.getSession().removeMarker(editor._lineHighlight.id);
+          editor._lineHighlight = null;
+        }
+        var lineHighlight = editor.session.highlightLines(data.start, data.end);
 
-Shiny.addCustomMessageHandler("aceEditor_gotoLine", function(data) {
-  var editor = window.ace.edit(data.editorId);
-  if (editor) {
-    // Remove previous marker
-    if (editor._currentMarker) {
-      editor.getSession().removeMarker(editor._currentMarker);
-    }
-    
-    editor.gotoLine(data.line, data.column, true);
-    editor.focus();
+        // Store marker ID to remove later
+        editor._lineHighlight = lineHighlight;
   }
 });

@@ -14,19 +14,19 @@ call_stack_item <- function(idx, name, stop_at_line, is_selected) {
         onmouseover = if (!is_selected) "this.style.background='#f5f5f5';" else "",
         onmouseout = if (!is_selected) "this.style.background='white';" else "",
         div(
-            style = "font-weight: 500; color: #333; margin-bottom: 2px;",
-            paste0("#", idx, ": ", name)
-        ),
-        div(
             style = "font-size: 11px; color: #666;",
-            paste0("Line ", stop_at_line)
+            glue::glue("# {idx}: {name} at Line {stop_at_line}")
         )
+        # div(
+        #     style = "font-size: 11px; color: #666;",
+        #     paste0("Line ", stop_at_line)
+        # )
     )
 }
 
 
 
-registerCallStackEvents <- function(input, output, session, capture, current_code, highlighted_line, selected_frame) {
+registerCallStackEvents <- function(input, output, session, capture, selected_frame) {
   # Render the call stack list
   output$stack_list <- renderUI({
     if (is.null(capture)) return(NULL)
@@ -52,24 +52,6 @@ registerCallStackEvents <- function(input, output, session, capture, current_cod
     frame_idx <- input$selected_frame
     selected_frame(frame_idx)
     
-    # # Update editor with selected frame's code
-    # code <- getEditorCode(capture, frame_idx)
-    # current_code(code)
-    
-    # shinyAce::updateAceEditor(
-    #   session = session,
-    #   editorId = "code_editor",
-    #   value = code
-    # )
-    
-    # # Highlight the line where this frame was called
-    # highlightCalledLine(capture, frame_idx, session)
   })
   
-  # Initialize with the last (most recent) frame
-#   observe({
-#     if (!is.null(capture) && is.null(selected_frame())) {
-#       selected_frame(length(capture))
-#     }
-#   })
 }

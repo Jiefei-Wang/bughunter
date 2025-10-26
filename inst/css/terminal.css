@@ -1,0 +1,24 @@
+.terminal {
+background: #111;
+color: #ddd;
+font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace;
+border-radius: 8px;
+padding: 12px;
+height: 420px;
+overflow-y: auto;
+box-shadow: 0 0 0 1px #333 inset;
+}
+.term-line { white-space: pre-wrap; word-break: break-word; }
+.term-prompt { color: #6cf; }
+.term-input {
+display: inline-block;
+outline: none;
+border: none;
+background: transparent;
+color: #ddd;
+caret-color: #ddd;
+min-width: 2ch;
+}
+.term-output { color: #9f9; }
+.term-error { color: #f88; }
+.term-muted { color: #7a7a7a; }

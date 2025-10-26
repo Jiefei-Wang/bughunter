@@ -1,3 +1,56 @@
+panel_card <- function(...){
+    card(
+        ...,
+        full_screen = TRUE,
+        height = "100%",
+        fill = FALSE
+    )
+}
+
+#' Create UI for Bug Viewer Application
+#'
+#' Creates the user interface with menu bar, toolbar, and 4-panel layout for debugging R code.
+#'
+#' @param initial_trace Optional initial trace object
+#' @return Shiny UI object
+#' @keywords internal
+create_ui <- function(initial_trace = NULL) {
+    page_fillable(
+        get_app_styles(),
+        get_app_javascript(),
+
+        # Menu bar
+        create_menu_bar(),
+        # Panel container with 4-pane layout
+        layout_columns(
+            panel_card(
+                card_header("Code"),
+                create_source_panel()
+            ),
+            panel_card(
+                card_header("Environment"),
+                create_environment_panel()
+            ),
+            height = "50%"
+        ),
+        layout_columns(
+            panel_card(
+                card_header("Console"),
+                create_console_panel()
+            ),
+            panel_card(
+                card_header("Call Stack"),
+                create_callstack_panel()
+            ),
+            height = "50%"
+        )
+    )
+}
+
+
+
+
+
 #' Create Menu Bar UI
 #'
 #' @return Shiny UI element for the menu bar
@@ -66,12 +119,8 @@ create_source_panel <- function() {
 #' @return Shiny UI element for the environment panel
 #' @keywords internal
 create_environment_panel <- function() {
-  div(class = "panel",
-    div(class = "panel-header", "Environment"),
-    div(class = "panel-body",
-      shiny::verbatimTextOutput("environment_display", placeholder = TRUE)
-    )
-  )
+#   tableOutput("env_table") 
+  reactableOutput("env_table")
 }
 
 #' Create Console Panel UI
@@ -101,22 +150,9 @@ create_console_panel <- function() {
 #' @return Shiny UI element for the call stack panel with error message at bottom
 #' @keywords internal
 create_callstack_panel <- function() {
-  div(
-    div(class = "stack-container",
+  div(class = "stack-container",
       div(class = "stack-block",
         shiny::uiOutput("stack_list")
-      ),
-      # Error message at the bottom
-      shiny::conditionalPanel(
-        condition = "output.has_error == true",
-        div(
-          style = "margin-top: 8px; padding: 8px; background: #ffebee; border: 1px solid #ef5350; border-radius: 3px; flex-shrink: 0;",
-          div(style = "font-weight: 600; color: #c62828; margin-bottom: 4px;", "Error:"),
-          div(style = "color: #b00020; font-family: 'SFMono-Regular', Consolas, monospace; font-size: 12px;",
-            shiny::textOutput("error_message")
-          )
-        )
       )
     )
-  )
 }
