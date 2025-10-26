@@ -15,16 +15,17 @@ get_current_line_content <- function(input) {
 # Function to highlight a specific line
 highlight_line <- function(session, line_number) {
     # print(paste("Highlighting line:", line_number))
-    # Remove existing annotations
-    session$sendCustomMessage("aceEditor_clearAnnotations", "code_editor")
+    # Remove existing highlights
+    session$sendCustomMessage("aceEditor_clearHighlights", "code_editor")
     
-    start_line <- line_number - 1
-    end_line <- line_number - 1
-    session$sendCustomMessage("aceEditor_highlightLines", 
-        list(editorId = "code_editor", start = start_line, end = end_line)
-    )
+    if (!is.null(line_number)&& !is.na(line_number)){
+        start_line <- line_number - 1
+        end_line <- line_number - 1
+        session$sendCustomMessage("aceEditor_highlightLines", 
+            list(editorId = "code_editor", start = start_line, end = end_line)
+        )
+    }
 }
-
 
 
 ##################################
@@ -50,18 +51,10 @@ registerEditorEvents <- function(input, output, session, capture, current_code, 
             # Set initial highlighted line if available
             call_line <- getStopAtLine(capture, selected_frame_idx)
             # print(paste("Initial highlight line:", call_line))
-            if (!is.null(call_line)&& !is.na(call_line)) {
-                highlight_line(session, call_line)
-            }
+            highlight_line(session, call_line)
         }
     })
     
-    # Update highlighted line when user clicks on call stack or other triggers
-    # observeEvent(input$highlight_line_trigger, {
-    #     new_line <- input$highlight_line_trigger
-    #     highlighted_line(new_line)
-    #     highlight_line(session, new_line)
-    # })
     
     # Handle Ctrl+Enter for executing selected code
     observeEvent(input$code_editor_key, {
