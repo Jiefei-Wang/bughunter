@@ -57,7 +57,7 @@ hunter <- function() {
     
     func_srcrefs <- lapply(functions, attr, "srcref")
     func_srcfiles <- lapply(func_srcrefs, attr, "srcfile")
-    func_src_codes <- sapply(func_srcfiles, function(sf) if (!is.null(sf)) sf$lines else NA)
+    func_src_codes <- lapply(func_srcfiles, function(sf) if (!is.null(sf)) sf$lines else NA)
     func_src_start <- sapply(func_srcrefs, function(sr) if (!is.null(sr)) sr[1] else NA)
     func_src_end <- sapply(func_srcrefs, function(sr) if (!is.null(sr)) sr[3] else NA)
     # browser()
