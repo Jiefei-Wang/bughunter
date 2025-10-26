@@ -20,8 +20,10 @@
   function scrollToBottom(c) {
     c.scrollTop = c.scrollHeight;
   }
-  function focusInput() {
-    const input = term && term.querySelector(".term-input:last-of-type");
+  function focusInput(input) {
+    if (!input) {
+      input = term && term.querySelector(".term-input:last-of-type");
+    }
     if (input) {
       input.focus();
       const sel = window.getSelection();
@@ -38,19 +40,6 @@
     const input = el("span", "term-input");
     input.contentEditable = "true";
     input.spellcheck = false;
-    
-    // Add click handler directly to the input
-    input.addEventListener("click", function(e) {
-      e.stopPropagation();
-      this.focus();
-      // Ensure cursor is placed at click position
-      const sel = window.getSelection();
-      const range = document.createRange();
-      range.selectNodeContents(this);
-      range.collapse(false);
-      sel.removeAllRanges();
-      sel.addRange(range);
-    });
     
     line.appendChild(prompt);
     line.appendChild(input);
@@ -136,48 +125,25 @@
         const fresh = makePromptLine();
         term.appendChild(fresh.line);
         scrollToBottom(term);
-        setTimeout(focusInput, 0);
+        focusInput(fresh.input);
       } else if (msg.type === "output") {
         appendOutputBlock(msg.text || "", "output");
-        // Create new prompt AFTER output
         const next = makePromptLine();
         term.appendChild(next.line);
         scrollToBottom(term);
-        // Focus the newly created input directly
-        next.input.focus();
-        const sel = window.getSelection();
-        const range = document.createRange();
-        range.selectNodeContents(next.input);
-        range.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(range);
+        focusInput(next.input);
       } else if (msg.type === "error") {
         appendOutputBlock(msg.text || "", "error");
-        // Create new prompt AFTER error
         const next = makePromptLine();
         term.appendChild(next.line);
         scrollToBottom(term);
-        // Focus the newly created input directly
-        next.input.focus();
-        const sel = window.getSelection();
-        const range = document.createRange();
-        range.selectNodeContents(next.input);
-        range.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(range);
+        focusInput(next.input);
       } else if (msg.type === "echo") {
         appendOutputBlock(msg.text || "", "echo");
         const next = makePromptLine();
         term.appendChild(next.line);
         scrollToBottom(term);
-        // Focus the newly created input directly
-        next.input.focus();
-        const sel = window.getSelection();
-        const range = document.createRange();
-        range.selectNodeContents(next.input);
-        range.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(range);
+        focusInput(next.input);
       }
     });
     return true;
