@@ -27,6 +27,20 @@ call_stack_item <- function(idx, name, stop_at_line, is_selected) {
 
 
 registerCallStackEvents <- function(input, output, session, capture, selected_frame) {
+
+  output$error_message <- renderUI({
+    if (is.null(capture)) return(NULL)
+    
+    err_msg <- capture@error_message
+    if (nzchar(err_msg)) {
+        div(
+            style = "font-size: 12px; color: #721c24;",
+            paste("Error:", err_msg)
+        )
+    } else {
+        NULL
+    }
+  })
   # Render the call stack list
   output$stack_list <- renderUI({
     if (is.null(capture)) return(NULL)

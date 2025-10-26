@@ -57,7 +57,8 @@ create_ui <- function(initial_trace = NULL) {
 #' @keywords internal
 create_menu_bar <- function() {
   div(
-    style = "background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 10px;",
+    style = "background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 10px; display: flex; justify-content: space-between; align-items: center;",
+    # Left side - File menu
     div(
       style = "display: inline-block; position: relative;",
       shiny::actionLink("file_menu", "File", 
@@ -76,6 +77,16 @@ create_menu_bar <- function() {
         )
       )
     ),
+    # Right side - Error message
+    div(
+      id = "error_message_container",
+      style = "flex: 1; max-width: 70%; margin-left: 20px; overflow: hidden;",
+      div(
+        class = "error-message-box",
+        style = "background: #f8d7da; color: #721c24; padding: 4px 12px; border: 1px solid #f5c6cb; border-radius: 4px; max-height: 28px; overflow: hidden; transition: max-height 0.3s ease; white-space: nowrap; text-overflow: ellipsis;",
+        shiny::uiOutput("error_message")
+      )
+    ),
     tags$script(shiny::HTML("
       $(document).on('click', '#file_menu', function(e) {
         e.stopPropagation();
@@ -85,6 +96,25 @@ create_menu_bar <- function() {
         if (!$(e.target).closest('#file_menu').length) {
           Shiny.setInputValue('show_file_menu', false, {priority: 'event'});
         }
+      });
+      // Expandable error message on hover
+      $(document).on('mouseenter', '.error-message-box', function() {
+        $(this).css({
+          'max-height': 'none',
+          'white-space': 'normal',
+          'z-index': '1000',
+          'position': 'relative',
+          'box-shadow': '0 2px 8px rgba(0,0,0,0.15)'
+        });
+      });
+      $(document).on('mouseleave', '.error-message-box', function() {
+        $(this).css({
+          'max-height': '28px',
+          'white-space': 'nowrap',
+          'z-index': 'auto',
+          'position': 'static',
+          'box-shadow': 'none'
+        });
       });
     "))
   )
@@ -133,7 +163,7 @@ create_console_panel <- function() {
 
 #' Create Call Stack Panel UI
 #'
-#' @return Shiny UI element for the call stack panel with error message at bottom
+#' @return Shiny UI element for the call stack panel
 #' @keywords internal
 create_callstack_panel <- function() {
   div(class = "stack-container",
