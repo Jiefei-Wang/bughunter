@@ -1,0 +1,17 @@
+
+/* Ace Editor should fill its container */
+#code_editor {
+    height: 100% !important;
+}
+
+    
+/* Ace Editor highlight styles */
+.hl-line {
+    background: #fff2a8 !important;
+    position: absolute;
+    z-index: 1;
+}
+
+.ace_gutter-cell.hl-line {
+    background: #ffe082 !important;
+}

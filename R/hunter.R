@@ -21,22 +21,21 @@ hunter <- function() {
     error_msg <- geterrmessage()
 
     # Get the call stack (excluding this function itself)
-    calls <- sys.calls()
-    frames <- sys.frames()
+    calls <- as.list(sys.calls())
+    frames <- as.list(sys.frames())
 
     # Remove the last call (this hunter function)
-    if (length(calls) > 0) {
-        calls <- calls[-length(calls)]
-        frames <- frames[-length(frames)]
-    }
+    nstack <- max(length(calls) - 1, 0)
+    calls_no_last <- calls[seq_len(nstack)]
+    frames_no_last <- frames[seq_len(nstack)]
 
     #######################
     ## Obtain information about the function being called
     #######################
 
-    func_names <- sapply(calls, function(call) as.character(call[[1]]))
+    func_names <- sapply(calls_no_last, function(call) as.character(call[[1]]))
     functions <- list()
-    for (i in seq_along(func_names)){
+    for (i in seq_len(nstack)){
         func_name <- func_names[i]
         if (i == 1) {
             # If at the top frame, the function should be from the global environment
@@ -74,20 +73,22 @@ hunter <- function() {
     #######################
     call_srcrefs <- lapply(calls, attr, "srcref")
     call_lines <- sapply(call_srcrefs, function(sr) if (!is.null(sr)) sr[1] else NA)
+    stop_at_lines <- call_lines[2:length(call_lines)]
 
-    calls_char <- sapply(calls, function(call) deparse(call))
+    calls_char <- sapply(calls_no_last, function(call) deparse(call))
 
+    # browser()
     # Store in package environment
-    bughunter_env$last_hunt <- .Hunt(
+    bughunter_env$last_capture <- .Capture(
         error_message = error_msg,
-        frames = frames,
+        frames = frames_no_last,
         func_names = func_names,
         func_src_codes = func_src_codes,
         func_src_available = func_src_available,
         func_src_start = func_src_start,
         func_src_end = func_src_end,
-        call_lines = call_lines,
-        calls = calls_char,
+        stop_at_lines = stop_at_lines,
+        calls = calls_char[seq_len(nstack)],
         timestamp = Sys.time()
     )
   
