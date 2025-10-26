@@ -1,4 +1,7 @@
 
+isNA <- function(x){ 
+    is.atomic(x) && length(x) == 1 && is.na(x)
+}
 
 #' Hunt Call Stacks for Error Debugging
 #'
@@ -58,7 +61,7 @@ hunter <- function() {
     func_src_start <- sapply(func_srcrefs, function(sr) if (!is.null(sr)) sr[1] else NA)
     func_src_end <- sapply(func_srcrefs, function(sr) if (!is.null(sr)) sr[3] else NA)
     # browser()
-    func_src_available <- sapply(func_src_codes, function(code) !identical(code, NA))
+    func_src_available <- sapply(func_src_codes, function(code) !isNA(code))
     # Handle cases where source code is not available
     for (i in seq_along(func_src_codes)) {
         if (!func_src_available[[i]]) {
