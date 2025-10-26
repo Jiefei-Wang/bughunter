@@ -32,18 +32,7 @@ You can install it using the following command:
 devtools::install("Jiefei-Wang/bughunter")
 ```
 
-
-
-## Example
-```{r}
-inspect(example_capture)
-```
-
-
-
-
-
-## Demo
+## Quick Start
 Suppose you have a simple R script that throws an error:
 ```{r}
 f <- function(x) {
@@ -74,16 +63,24 @@ print(capture)
 # Frame 6: stop("Test error") stopped at line NA
 ```
 
-## Let's Inspect our hunting result!
-Debugging your code is never that easy, just inspect your capture object! BOOM! You have a fully interactive Shiny app to explore your error:
+Debugging your code has never been this easy! Just inspect your capture object and BOOM! 💥 You have a fully interactive Shiny app to explore your error. You can even evaluate R code in this shiny app as if you were in your regular R session:
 ```{r}
 inspect(capture)
 ```
-![1761517627973](image/README/1761517627973.png)
+![1761519109839](image/README/1761519109839.png)
 
+You can save your capture object as a regular R object using `saveRDS()` and load it later with `readRDS()` to inspect it again. Therefore, you can share your capture object with others easily!
+```{r}
+saveRDS(capture, "my_capture.rds")
+# Later...
+loaded_capture <- readRDS("my_capture.rds")
+inspect(loaded_capture)
+```
 
-
-
+Here is a built-in example capture object included in the package using the same error-generating code as above:
+```{r}
+inspect(example_capture)
+```
 
 ## Limitations
 
