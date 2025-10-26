@@ -11,7 +11,7 @@
 **Struggling to explain bugs to others?** 🐛  
 **Wish you could see *exactly* what went wrong?** 🔍
 
-**bughunter** transforms R debugging from frustrating guesswork into surgical precision. When errors strike, `hunt()` captures *everything*—the complete call stack, source code, line numbers, variable states, and more—then serves it up in a beautiful, interactive Shiny interface.
+**bughunter** transforms R debugging from frustrating guesswork into surgical precision. When errors strike, `hunt()` captures *everything*—the complete call stack, source code, line numbers, variable states, and allow you to share it with your colleagues for collaborative debugging.
 
 **Share bugs with clarity. Debug with confidence. Hunt like a pro.** 🎯
 
