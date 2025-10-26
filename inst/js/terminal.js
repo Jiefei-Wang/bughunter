@@ -43,6 +43,13 @@
     input.addEventListener("click", function(e) {
       e.stopPropagation();
       this.focus();
+      // Ensure cursor is placed at click position
+      const sel = window.getSelection();
+      const range = document.createRange();
+      range.selectNodeContents(this);
+      range.collapse(false);
+      sel.removeAllRanges();
+      sel.addRange(range);
     });
     
     line.appendChild(prompt);
@@ -136,20 +143,41 @@
         const next = makePromptLine();
         term.appendChild(next.line);
         scrollToBottom(term);
-        setTimeout(focusInput, 0);
+        // Focus the newly created input directly
+        next.input.focus();
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(next.input);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
       } else if (msg.type === "error") {
         appendOutputBlock(msg.text || "", "error");
         // Create new prompt AFTER error
         const next = makePromptLine();
         term.appendChild(next.line);
         scrollToBottom(term);
-        setTimeout(focusInput, 0);
+        // Focus the newly created input directly
+        next.input.focus();
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(next.input);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
       } else if (msg.type === "echo") {
         appendOutputBlock(msg.text || "", "echo");
         const next = makePromptLine();
         term.appendChild(next.line);
         scrollToBottom(term);
-        setTimeout(focusInput, 0);
+        // Focus the newly created input directly
+        next.input.focus();
+        const sel = window.getSelection();
+        const range = document.createRange();
+        range.selectNodeContents(next.input);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
       }
     });
     return true;
