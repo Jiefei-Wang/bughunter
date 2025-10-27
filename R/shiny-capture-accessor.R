@@ -63,6 +63,17 @@ setMethod("getEnvDescriptor", "Capture", function(capture, frameIdx) {
         )
     }
     env_desc <- do.call(rbind, env_desc)
+    if (is.null(env_desc)) {
+        env_desc <- data.frame(
+            Var = character(0),
+            Type = character(0),
+            Value = character(0),
+            details = character(0),
+            stringsAsFactors = FALSE
+        )
+    }
+
+
     # order by: type, var name
     env_desc <- env_desc[order(env_desc$Type, env_desc$Var), ]
     rownames(env_desc) <- NULL

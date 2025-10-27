@@ -36,7 +36,7 @@ hunter <- function() {
     ## Obtain information about the function being called
     #######################
 
-    func_names <- sapply(calls_no_last, function(call) as.character(call[[1]]))
+    func_names <- sapply(calls_no_last, function(call) as.character(call)[1])
     functions <- list()
     for (i in seq_len(nstack)){
         func_name <- func_names[i]
@@ -80,7 +80,7 @@ hunter <- function() {
     call_lines <- sapply(call_srcrefs, function(sr) if (!is.null(sr)) sr[1] else NA)
     stop_at_lines <- call_lines[2:length(call_lines)]
 
-    calls_char <- sapply(calls_no_last, function(call) deparse(call))
+    calls_char <- sapply(calls_no_last, function(call) paste0(deparse(call), collapse = "\n"))
 
     # browser()
     # Store in package environment
