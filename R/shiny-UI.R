@@ -57,20 +57,18 @@ create_ui <- function(initial_trace = NULL) {
 #' @keywords internal
 create_menu_bar <- function() {
   div(
-    style = "background: #f5f5f5; border-bottom: 1px solid #ddd; padding: 4px 10px; display: flex; justify-content: space-between; align-items: center;",
+    class = "menu-bar",
     # Left side - File menu
     div(
-      style = "display: inline-block; position: relative;",
-      shiny::actionLink("file_menu", "File", 
-                       style = "padding: 4px 12px; display: inline-block; cursor: pointer;"),
+      class = "file-menu-container",
+      shiny::actionLink("file_menu", "File", class = "file-menu-link"),
       shiny::conditionalPanel(
         condition = "input.show_file_menu",
         div(
           id = "file_menu_dropdown",
-          style = "position: absolute; top: 100%; left: 0; background: white; border: 1px solid #ddd; box-shadow: 0 2px 4px rgba(0,0,0,0.1); z-index: 1000; min-width: 150px;",
           div(
             shiny::actionButton("open_file", "Open File...", 
-                               style = "width: 100%; text-align: left; border: none; background: white; padding: 8px 12px; cursor: pointer;",
+                               class = "file-menu-button",
                                onclick = "this.style.background='#f0f0f0'",
                                onmouseout = "this.style.background='white'")
           )
@@ -80,10 +78,8 @@ create_menu_bar <- function() {
     # Right side - Error message
     div(
       id = "error_message_container",
-      style = "flex: 1; max-width: 70%; margin-left: 20px; overflow: hidden;",
       div(
         class = "error-message-box",
-        style = "background: #f8d7da; color: #721c24; padding: 4px 12px; border: 1px solid #f5c6cb; border-radius: 4px; max-height: 28px; overflow: hidden; transition: max-height 0.3s ease; white-space: nowrap; text-overflow: ellipsis;",
         shiny::uiOutput("error_message")
       )
     )
