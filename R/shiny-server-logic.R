@@ -21,6 +21,8 @@ create_server <- function(input, output, session, capture = NULL) {
     current_code <- reactiveVal("")
     highlighted_line <- reactiveVal(1)  # 1-based line number
 
+    registerMenuBarEvents(input, output, session, capture)
+
     registerEditorEvents(input, output, session, capture, current_code, highlighted_line, selected_frame)
 
     registerEnvironmentEvents(input, output, session, capture, selected_frame, environment_dt)
@@ -28,6 +30,8 @@ create_server <- function(input, output, session, capture = NULL) {
     registerCallStackEvents(input, output, session, capture, selected_frame)
 
     registerConsoleEvents(input, output, session, capture, selected_frame)
+
+
 
 }
 
