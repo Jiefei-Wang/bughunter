@@ -44,7 +44,8 @@
     flex: 1;
     max-width: 70%;
     margin-left: 20px;
-    overflow: hidden;
+    position: relative;
+    height: 28px;
 }
 
 .error-message-box {
@@ -53,17 +54,25 @@
     padding: 4px 12px;
     border: 1px solid #f5c6cb;
     border-radius: 4px;
-    max-height: 28px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 28px;
+    line-height: 20px;
     overflow: hidden;
-    transition: max-height 0.3s ease;
     white-space: nowrap;
     text-overflow: ellipsis;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .error-message-box:hover {
-    max-height: none;
+    height: auto;
+    max-height: 300px;
+    overflow-y: auto;
     white-space: normal;
     z-index: 1000;
-    position: relative;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    border-color: #f1aeb5;
 }

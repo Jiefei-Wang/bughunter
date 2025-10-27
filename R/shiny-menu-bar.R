@@ -2,8 +2,7 @@
 setGeneric("getErrorMsg", function(capture) standardGeneric("getErrorMsg"))
 #' @export
 setMethod("getErrorMsg", "Capture", function(capture) {
-    # capture@error_message
-    "test\nnew line\nanother line"
+    capture@error_message
 })
 
 
