@@ -65,7 +65,7 @@ Debugging your code has never been this easy! Just inspect your capture object a
 ```{r}
 inspect(capture)
 ```
-![1761519109839](image/README/1761519109839.png)
+![1761525078797](image/README/1761525078797.png)
 
 You can save your capture object as a regular R object using `saveRDS()` and load it later with `readRDS()` to inspect it again. Therefore, you can share your capture object with others easily!
 ```{r}
