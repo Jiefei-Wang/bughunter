@@ -10,10 +10,11 @@
 #' @export
 inspect <- function(trace = NULL) {
     # Launch the Shiny application
-    shiny::shinyApp(
+    app <- shiny::shinyApp(
         ui = create_ui(trace),
         server = function(input, output, session) {
             create_server(input, output, session, trace)
         }
     )
+    shiny::runApp(app, launch.browser = TRUE)
 }

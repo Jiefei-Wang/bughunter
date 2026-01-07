@@ -73,6 +73,7 @@ hunter <- function() {
     }
     func_src_codes <- sapply(func_src_codes, paste0, collapse = "\n")
     # func_src_available <- unlist(func_src_available)
+    
     #######################
     ## Obtain information about the location of each call
     #######################
