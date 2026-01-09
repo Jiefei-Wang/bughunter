@@ -7,7 +7,7 @@ setMethod("getErrorMsg", "Capture", function(capture) {
 
 
 
-registerMenuBarEvents <- function(input, output, session, capture) {
+registerMenuBarEvents <- function(input, output, session, capture, params) {
   output$error_message <- renderUI({
     if (is.null(capture)) return(NULL)
 

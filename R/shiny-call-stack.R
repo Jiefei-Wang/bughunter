@@ -22,7 +22,8 @@ call_stack_item <- function(idx, name, stop_at_line, is_selected) {
 }
 
 
-registerCallStackEvents <- function(input, output, session, capture, selected_frame) {
+registerCallStackEvents <- function(input, output, session, capture, params) {
+    selected_frame <- params$selected_frame
     # Render the call stack list
     output$stack_list <- renderUI({
         if (is.null(capture)) {

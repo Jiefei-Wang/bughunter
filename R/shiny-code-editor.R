@@ -33,7 +33,10 @@ highlight_line <- function(session, line_number) {
 ##################################
 
 
-registerEditorEvents <- function(input, output, session, capture, current_code, highlighted_line, selected_frame) {
+registerEditorEvents <- function(input, output, session, capture, params) {
+    selected_frame <- params$selected_frame
+    current_code <- params$current_code
+    highlighted_line <- params$highlighted_line
     # Initialize the editor with content
     observe({
         if (!is.null(capture)) {
@@ -47,9 +50,12 @@ registerEditorEvents <- function(input, output, session, capture, current_code, 
                 value = code,
                 readOnly = !isCodeEditable(capture)
             )
+            # Track current code and highlighted line in shared params
+            current_code(code)
             
             # Set initial highlighted line if available
             call_line <- getStopAtLine(capture, selected_frame_idx)
+            highlighted_line(call_line)
             # print(paste("Initial highlight line:", call_line))
             highlight_line(session, call_line)
         }

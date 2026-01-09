@@ -104,6 +104,7 @@ setMethod("show", "Capture", function(object) {
         cat(msg)
         cat("\n")
     }
+    cat("Call inspect() to run the interactive inspector.\n")
 })
 
 #' Length method for Capture

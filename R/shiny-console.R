@@ -1,7 +1,8 @@
 
 
 
-registerConsoleEvents <- function(input, output, session, capture, selected_frame) {
+registerConsoleEvents <- function(input, output, session, capture, params) {
+    selected_frame <- params$selected_frame
   # Receive command strings from JS: input$term_cmd
   observeEvent(input$term_cmd, {
     # print(glue("Received console command: {input$term_cmd}"))
