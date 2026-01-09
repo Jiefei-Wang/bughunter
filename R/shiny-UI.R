@@ -7,6 +7,14 @@ panel_card <- function(...){
     )
 }
 
+panel_tab <- function(...){
+    navset_card_tab(
+        ...,
+        full_screen = TRUE,
+        height = "100%"
+    )
+}
+
 #' Create UI for Bug Viewer Application
 #'
 #' Creates the user interface with menu bar, toolbar, and 4-panel layout for debugging R code.
@@ -15,6 +23,7 @@ panel_card <- function(...){
 #' @return Shiny UI object
 #' @keywords internal
 create_ui <- function(initial_trace = NULL) {
+    title_style <- "font-size: 12px; margin-bottom: 0rem"
     page_fillable(
         get_app_styles(),
         get_app_javascript(),
@@ -23,24 +32,32 @@ create_ui <- function(initial_trace = NULL) {
         create_menu_bar(),
         # Panel container with 4-pane layout
         layout_columns(
-            panel_card(
-                card_header("Code"),
+            panel_tab(
+                nav_panel(
+                card_title("Code", style = title_style),
                 create_source_panel()
+                )
             ),
-            panel_card(
-                card_header("Environment"),
-                create_environment_panel()
+            panel_tab(
+                 nav_panel(
+                    card_title("Environment", style = title_style),
+                    create_environment_panel()
+                )
             ),
             height = "50%"
         ),
         layout_columns(
-            panel_card(
-                card_header("Console"),
-                create_console_panel()
+            panel_tab(
+                nav_panel(
+                    card_title("Console", style = title_style),
+                    create_console_panel()
+                )
             ),
-            panel_card(
-                card_header("Call Stack"),
-                create_callstack_panel()
+            panel_tab(
+                nav_panel(
+                    card_title("Call Stack", style = title_style),
+                    create_callstack_panel()
+                )
             ),
             height = "50%"
         )

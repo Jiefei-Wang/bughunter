@@ -7,7 +7,7 @@
 create_callstack_panel()
 }
 \value{
-Shiny UI element for the call stack panel with error message at bottom
+Shiny UI element for the call stack panel
 }
 \description{
 Create Call Stack Panel UI

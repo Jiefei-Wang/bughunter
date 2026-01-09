@@ -2,7 +2,7 @@
 #' @return `hunt`: results of `eval(expr)`
 #' @rdname hunt
 #' @export
-hunt <- function(expr, on.error = c("browse", "capture")) {
+hunt <- function(expr, on.error = c("browse", "stop", "return"), text.only = FALSE) {
     on.error <- match.arg(on.error)
     # error <- getOption("error")
     # options(error = hunter)
@@ -18,23 +18,25 @@ hunt <- function(expr, on.error = c("browse", "capture")) {
         withCallingHandlers(
             eval(substitute(expr), parent.frame()),
             error = function(e) {
-                hunter()
+                makeHunter(text.only = text.only)()
             }
         ),
         error = function(e) {
-            message("Error: ", conditionMessage(e))
-            error_occurred <<- TRUE
+            if (on.error == "stop") {
+                stop(e)
+            } else {
+                error_occurred <<- TRUE
+            }
         }
     )
     if (error_occurred) {
+        capture <- getLastCapture()
         if (on.error == "browse") {
             message("Entering browser at error location...")
-            capture <- getLastCapture()
             inspect(capture)
-        } else if (on.error == "capture") {
-            # do nothing here, hunter() has already captured the error
+        } else if (on.error == "return") {
+            invisible(capture)
         }
-        invisible(NULL)
     } else {
         value
     }

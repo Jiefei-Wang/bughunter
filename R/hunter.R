@@ -3,17 +3,11 @@ isNA <- function(x){
     is.atomic(x) && length(x) == 1 && is.na(x)
 }
 
-#' Hunt Call Stacks for Error Debugging
-#'
-#' This function captures the call stack, deparsed code for each frame, and line numbers
-#' when an error occurs. It stores the information in a package environment for later retrieval.
-#' Use with options(error = hunter) to automatically capture errors.
-#'
-#' @param condition The condition object (typically an error)
-#' @return `hunter`: Invisible NULL
-#' @rdname hunt
-#' @export
-hunter <- function() {
+
+#' Create a Hunter Function for Error Debugging
+#' @export 
+makeHunter <- function(text.only = FALSE) {
+function() {
     # Temporarily unset the error handler to prevent recursion
     error <- getOption("error")
     options(error = NULL)
@@ -97,8 +91,31 @@ hunter <- function() {
         calls = calls_char[seq_len(nstack)],
         timestamp = Sys.time()
     )
-  
+
+    if (text.only) {
+        print("Creating TextCapture from Capture...")
+        bughunter_env$last_capture <- newTextCapture(bughunter_env$last_capture)
+    }
   
     # Don't re-throw - let R handle the error normally
     invisible(NULL)
 }
+}
+
+#' Hunt Call Stacks for Error Debugging
+#'
+#' This function captures the call stack, deparsed code for each frame, and line numbers
+#' when an error occurs. It stores the information in a package environment for later retrieval.
+#' Use with options(error = hunter) to automatically capture errors.
+#'
+#' @param condition The condition object (typically an error)
+#' @return `hunter`: Invisible NULL
+#' @rdname hunt
+#' @export
+hunter <- makeHunter()
+
+#' @rdname hunt
+#' @export
+textHunter <- makeHunter(text.only = TRUE)
+
+

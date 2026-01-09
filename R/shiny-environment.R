@@ -1,6 +1,9 @@
 
 registerEnvironmentEvents <- function(input, output, session, capture, 
-selected_frame, environment_dt) {
+params) {
+    selected_frame <- params$selected_frame
+    environment_dt <- params$environment_dt
+    
     # Observe changes in the selected frame
     observeEvent(selected_frame(), {
         colNames <- colnames(environment_dt())
@@ -20,16 +23,19 @@ selected_frame, environment_dt) {
         # Update the environment panel with the latest data
         output$env_table <- renderReactable({
             dt <- environment_dt()
-            details <- dt$details
-            dt <- dt[, !(names(dt) %in% c("details")), drop = FALSE]
+            dt <- dt[, c("var", "type", "value")]
             reactable(
-                dt, 
-                pagination = FALSE, 
+                dt,
                 details = function(index) {
                     htmltools::div(
-                        htmltools::tags$pre(details[[index]])
+                        htmltools::tags$pre(
+                            getEnvVarDetail(capture, selected_frame(), dt$var[index])
+                        )
                     )
-                }
+                }, 
+                pagination = FALSE,
+                wrap = FALSE,
+                style = list(fontSize = "12px")
             )
         })
 

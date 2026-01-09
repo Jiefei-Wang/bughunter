@@ -14,8 +14,12 @@ create_server <- function(input, output, session, capture = NULL) {
     nCalls <- length(capture)
     # Reactive value to track selected frame
     selected_frame <- reactiveVal(nCalls)
-
     environment_dt <- reactiveVal(data.frame(var = 1, value = 2))
+
+    params <- list(
+        selected_frame = selected_frame,
+        environment_dt = environment_dt
+    )
 
     # Reactive values to track content and highlighted line
     current_code <- reactiveVal("")
@@ -25,7 +29,7 @@ create_server <- function(input, output, session, capture = NULL) {
 
     registerEditorEvents(input, output, session, capture, current_code, highlighted_line, selected_frame)
 
-    registerEnvironmentEvents(input, output, session, capture, selected_frame, environment_dt)
+    registerEnvironmentEvents(input, output, session, capture, params)
 
     registerCallStackEvents(input, output, session, capture, selected_frame)
 

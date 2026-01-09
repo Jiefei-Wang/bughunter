@@ -3,11 +3,14 @@
 \name{hunt}
 \alias{hunt}
 \alias{hunter}
+\alias{textHunter}
 \title{Hunt Call Stacks for Error Debugging}
 \usage{
-hunt(expr)
+hunt(expr, on.error = c("browse", "stop", "return"), text.only = FALSE)
 
 hunter()
+
+textHunter()
 }
 \arguments{
 \item{expr}{An R expression to evaluate with error hunting.}

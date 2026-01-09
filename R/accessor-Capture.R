@@ -1,26 +1,19 @@
-
+#' @include class-Capture.R
+NULL
 
 #####################################
 # Call stack methods
 #####################################
 
 #' @export
-setGeneric("getEditorCode", function(capture, frameIdx) standardGeneric("getEditorCode"))
-#' @export
 setMethod("getEditorCode", "Capture", function(capture, frameIdx) {
     paste0(capture@func_src_codes[[frameIdx]], collapse = "\n")
 })
 
 #' @export
-setGeneric("getStopAtLine", function(capture, frameIdx) standardGeneric("getStopAtLine"))
-
-#' @export
 setMethod("getStopAtLine", "Capture", function(capture, frameIdx) {
     capture@stop_at_lines[[frameIdx]]
 })
-
-#' @export
-setGeneric("getCallName", function(capture, frameIdx) standardGeneric("getCallName"))
 
 #' @export
 setMethod("getCallName", "Capture", function(capture, frameIdx) {
@@ -34,9 +27,6 @@ setMethod("getCallName", "Capture", function(capture, frameIdx) {
 #####################################
 
 #' @export
-setGeneric("getEnvDescriptor", function(capture, frameIdx) standardGeneric("getEnvDescriptor"))
-
-#' @export
 setMethod("getEnvDescriptor", "Capture", function(capture, frameIdx) {
     nchar <- 40
     frame <- capture@frames[[frameIdx]]
@@ -48,64 +38,67 @@ setMethod("getEnvDescriptor", "Capture", function(capture, frameIdx) {
                 error = function(e) e
             )
         )
-        details <- describeVariable(val)
-
-        value <- details
-        if (nchar(value) > nchar) {
-            value <- paste0(substr(value, 1, nchar - 3), "...")
-        }
+        value <- getVarValue(val)
         env_desc[[nm]] <- data.frame(
-            Var = nm,
-            Type = class(val)[1],
-            Value = value,
-            details = details,
+            var = nm,
+            type = class(val)[1],
+            value = value,
             stringsAsFactors = FALSE
         )
     }
     env_desc <- do.call(rbind, env_desc)
     if (is.null(env_desc)) {
         env_desc <- data.frame(
-            Var = character(0),
-            Type = character(0),
-            Value = character(0),
-            details = character(0),
+            var = character(0),
+            type = character(0),
+            value = character(0),
             stringsAsFactors = FALSE
         )
     }
 
 
     # order by: type, var name
-    env_desc <- env_desc[order(env_desc$Type, env_desc$Var), ]
+    env_desc <- env_desc[order(env_desc$type, env_desc$var), ]
     rownames(env_desc) <- NULL
     env_desc
 })
 
+
+#' @export
+setMethod("getEnvVarDetail", "Capture", function(capture, frameIdx, varName) {
+    frame <- capture@frames[[frameIdx]]
+    val <- suppressWarnings(
+        tryCatch(
+            get(varName, envir = frame, inherits = FALSE), 
+            error = function(e) e
+        )
+    )
+    details <- tryCatch({
+        if (is.function(val)) {
+            capture.output(print(val))
+        } else {
+            capture.output(str(val))
+        }
+    }, error = function(e) {
+        "Error retrieving details"
+    })
+    paste(details, collapse = "\n")
+})
 
 #####################################
 # Code editor methods
 #####################################
 
 #' @export
-setGeneric("isCodeEditable", function(capture, frameIdx) standardGeneric("isCodeEditable"))
-#' @export
 setMethod("isCodeEditable", "Capture", function(capture, frameIdx) {
     FALSE
 })
 
 
-
 #####################################
 # console code evaluation methods
 #####################################
-#' @export
-setGeneric("isEvalable", function(capture, frameIdx) standardGeneric("isEvalable"))
-#' @export
-setMethod("isEvalable", "Capture", function(capture, frameIdx) {
-    FALSE
-})
 
-#' @export
-setGeneric("evalCode", function(capture, frameIdx, code) standardGeneric("evalCode"))
 #' @export
 setMethod("evalCode", "Capture", function(capture, frameIdx, code) {
     frame <- capture@frames[[frameIdx]]

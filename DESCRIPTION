@@ -17,3 +17,27 @@ Imports:
     shinyAce,
     reactable
 LazyData: true
+Collate: 
+    'accessor-Capture-generic.R'
+    'class-Capture.R'
+    'accessor-Capture.R'
+    'class-TextCapture.R'
+    'accessor-TextCapture.R'
+    'example.R'
+    'getLastCapture.R'
+    'hunt.R'
+    'hunter.R'
+    'shiny-UI.R'
+    'shiny-call-stack.R'
+    'shiny-code-editor.R'
+    'shiny-console.R'
+    'shiny-environment-utils.R'
+    'shiny-environment.R'
+    'shiny-inspect.R'
+    'shiny-menu-bar.R'
+    'shiny-server-logic.R'
+    'shiny-statics.R'
+    'zzz.r'
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
